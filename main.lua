@@ -63,8 +63,6 @@ end
 
 
 local function set_app_states(state)
-    print('HERE ' .. tostring(json.encode(app_paths_to_disable)))
-
     for _, app_name in ipairs(app_paths_to_disable) do
         local app = hs.application.get(app_name)
         

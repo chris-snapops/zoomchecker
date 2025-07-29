@@ -59,8 +59,16 @@ end tell
 EOF
 echo "[ZoomChecker Installer] Hammerspoon added to login items."
 
-# ---- 5. Launch Hammerspoon ----
+# ---- 5. Cleanup ----
+echo "[ZoomChecker Installer] Cleaning up..."
+rm ~/Downloads/Hammerspoon.zip 
+cd ~/.hammerspoon/zoomchecker
+rm -rf .git .gitignore README.md
+
+
+# ---- 6. Launch Hammerspoon ----
 echo "[ZoomChecker Installer] Launching Hammerspoon..."
 open -a "Hammerspoon"
+
 
 echo "[ZoomChecker Installer] Setup complete!"
