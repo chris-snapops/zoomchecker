@@ -73,7 +73,7 @@ local function set_aircall_state(state)
     elseif state == "enable" then
         if not aircall then
             hs.application.launchOrFocus(aircallAppName)
-            hs.timer.doAfter(0.1, function()
+            hs.timer.doAfter(0.3, function()
                 local app = hs.application.get(aircallAppName)
                 if app then app:hide() end
                 log("Aircall launched & minimized")
