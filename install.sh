@@ -40,7 +40,7 @@ fi
 
 # ---- 3. Ensure init.lua includes the require line ----
 INIT_FILE="$HOME/.hammerspoon/init.lua"
-REQUIRE_LINE='require("ZoomChecker.checkZoomMeeting")'
+REQUIRE_LINE='require("ZoomChecker.main")'
 
 if ! grep -Fxq "$REQUIRE_LINE" "$INIT_FILE" 2>/dev/null; then
     echo "$REQUIRE_LINE" >> "$INIT_FILE"
