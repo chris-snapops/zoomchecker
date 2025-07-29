@@ -42,4 +42,18 @@ else
     echo "[ZoomChecker Installer] Require line already present in init.lua."
 fi
 
+# ---- 4. Add Hammerspoon to login items ----
+osascript <<EOF
+tell application "System Events"
+    if not (exists login item "Hammerspoon") then
+        make login item at end with properties {path:"/Applications/Hammerspoon.app", hidden:true, name:"Hammerspoon"}
+    end if
+end tell
+EOF
+echo "[ZoomChecker Installer] Hammerspoon added to login items."
+
+# ---- 5. Launch Hammerspoon ----
+echo "[ZoomChecker Installer] Launching Hammerspoon..."
+open -a "Hammerspoon"
+
 echo "[ZoomChecker Installer] Setup complete!"
