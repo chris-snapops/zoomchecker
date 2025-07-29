@@ -7,7 +7,7 @@ echo "[ZoomChecker Installer] Starting setup..."
 # ---- 1. Install Hammerspoon if not present ----
 if ! [ -d "/Applications/Hammerspoon.app" ]; then
     echo "[ZoomChecker Installer] Hammerspoon not found. Installing latest version..."
-    curl -L -o ~/Downloads/Hammerspoon.zip https://github.com/Hammerspoon/hammerspoon/releases/latest/download/Hammerspoon.zip
+    curl -L -o ~/Downloads/Hammerspoon.zip https://github.com/Hammerspoon/hammerspoon/releases/download/1.0.0/Hammerspoon-1.0.0.zip
     unzip -q ~/Downloads/Hammerspoon.zip -d ~/Downloads/
     mv -f ~/Downloads/Hammerspoon.app /Applications/
     echo "[ZoomChecker Installer] Hammerspoon installed."
