@@ -1,8 +1,9 @@
 local frequency = 2
 local aircallAppName = "Aircall Workspace"
 local aircallAppPath = "/Applications/Aircall Workspace.app"
-local enableShortcutPath = '/Users/riipen/Downloads/zoomDND/Enable DND.shortcut'
-local disableShortcutPath = '/Users/riipen/Downloads/zoomDND/Disable DND.shortcut'
+local shortcutBasePath = os.getenv("HOME") .. "/.hammerspoon/ZoomChecker/mac_shortcuts"
+local enableShortcutPath = shortcutBasePath .. "/Enable DND.shortcut"
+local disableShortcutPath = shortcutBasePath .. "/Disable DND.shortcut"
 
 local function log(msg)
     print('[ZoomChecker] ' .. msg)
