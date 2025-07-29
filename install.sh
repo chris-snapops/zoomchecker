@@ -2,7 +2,7 @@
 
 set -e
 
-echo "[ZoomChecker Installer] Starting setup..."
+echo "[ZoomChecker Installer] Starting setup v1..."
 
 # ---- 1. Install Hammerspoon if not present ----
 if ! [ -d "/Applications/Hammerspoon.app" ]; then
