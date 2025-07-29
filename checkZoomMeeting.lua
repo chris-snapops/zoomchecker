@@ -1,9 +1,13 @@
-local frequency = 2
-local aircallAppName = "Aircall Workspace"
-local aircallAppPath = "/Applications/Aircall Workspace.app"
-local shortcutBasePath = os.getenv("HOME") .. "/.hammerspoon/ZoomChecker/mac_shortcuts"
-local enableShortcutPath = shortcutBasePath .. "/Enable DND.shortcut"
-local disableShortcutPath = shortcutBasePath .. "/Disable DND.shortcut"
+-- require('ZoomChecker.zoomCheckerUI')
+local config = require('ZoomChecker.config')
+local json = require("hs.json")
+
+local frequency = config.get_frequency()
+local disable_dnd_during_zoom = config.get_disable_dnd_during_zoom()
+local app_paths_to_disable = config.get_apps_to_quit_during_zoom()
+local shortcut_base_path = os.getenv("HOME") .. "/.hammerspoon/ZoomChecker/mac_shortcuts"
+local enable_shortcut_path = shortcut_base_path .. "/Enable DND.shortcut"
+local disable_shortcut_path = shortcut_base_path .. "/Disable DND.shortcut"
 
 local function log(msg)
     print('[ZoomChecker] ' .. msg)
@@ -35,6 +39,8 @@ local function install_shortcut_if_needed(shortcut_path)
 end
 
 local function run_dnd_shortcut(action)
+    if not disable_dnd_during_zoom then return nil end
+
     log(action .. " DND")
     hs.osascript.applescript(string.format([[
         tell application "Shortcuts Events"
@@ -43,11 +49,11 @@ local function run_dnd_shortcut(action)
     ]], action))
 end
 
-local function checkZoomMeeting(zoomApp)
-    if not zoomApp then return false end
-    local menuItems = zoomApp:getMenuItems()
-    if not menuItems then return false end
-    for _, menu in ipairs(menuItems) do
+local function check_zoom_meeting(zoom_app)
+    if not zoom_app then return false end
+    local menu_items = zoom_app:getMenuItems()
+    if not menu_items then return false end
+    for _, menu in ipairs(menu_items) do
         if menu["AXTitle"] == "Meeting" then
             return true
         end
@@ -55,58 +61,57 @@ local function checkZoomMeeting(zoomApp)
     return false
 end
 
--- Check Aircall exists in /Applications once
-local aircallInstalled = hs.fs.attributes(aircallAppPath, "mode") == "directory"
-if not aircallInstalled then
-    log("Aircall is not installed in /Applications. Skipping Aircall controls.")
-end
 
-local function set_aircall_state(state)
-    if not aircallInstalled then return end
-    local aircall = hs.application.get(aircallAppName)
+local function set_app_states(state)
+    print('HERE ' .. tostring(json.encode(app_paths_to_disable)))
 
-    if state == "disable" then
-        if aircall then
-            aircall:kill()
-            log("Aircall quit")
-        end
-    elseif state == "enable" then
-        if not aircall then
-            hs.application.launchOrFocus(aircallAppName)
-            hs.timer.doAfter(0.3, function()
-                local app = hs.application.get(aircallAppName)
-                if app then
-                    local win = app:mainWindow()
-                    if win then
-                        win:minimize()
-                        log("Aircall launched & minimized")
+    for _, app_name in ipairs(app_paths_to_disable) do
+        local app = hs.application.get(app_name)
+        
+        if state == "disable" then
+            if app then
+                app:kill()
+                log(app_name .. " quit")
+            end
+        elseif state == "enable" then
+            if not app then
+                hs.application.launchOrFocus(app_name)
+                hs.timer.doAfter(0.3, function()
+                    local opened_app = hs.application.get(app_name)
+                    if opened_app then
+                        local win = opened_app:mainWindow()
+                        if win then
+                            win:minimize()
+                            log(app_name .. " launched & minimized")
+                        end
                     end
-                end
-            end)
+                end)
+            end
         end
     end
 end
 
+
 -- Install shortcuts once
-install_shortcut_if_needed(enableShortcutPath)
-install_shortcut_if_needed(disableShortcutPath)
+install_shortcut_if_needed(enable_shortcut_path)
+install_shortcut_if_needed(disable_shortcut_path)
 
-local lastState = nil
+local last_state = nil
 
-zoomWatcher = hs.timer.doEvery(frequency, function()
-    local zoomApp = hs.application.get("zoom.us")
-    local inMeeting = checkZoomMeeting(zoomApp)
+zoom_watcher = hs.timer.doEvery(frequency, function()
+    local zoom_app = hs.application.get("zoom.us")
+    local in_meeting = check_zoom_meeting(zoom_app)
 
-    if zoomApp and inMeeting and lastState ~= "inMeeting" then
-        lastState = "inMeeting"
-        log(lastState)
+    if zoom_app and in_meeting and last_state ~= "inMeeting" then
+        last_state = "inMeeting"
+        log(last_state)
         run_dnd_shortcut("Enable")
-        set_aircall_state("disable")
-    elseif not inMeeting and lastState ~= "notInMeeting" then
-        lastState = "notInMeeting"
-        log(lastState)
+        set_app_states("disable")
+    elseif not in_meeting and last_state ~= "notInMeeting" then
+        last_state = "notInMeeting"
+        log(last_state)
         run_dnd_shortcut("Disable")
-        set_aircall_state("enable")
+        set_app_states("enable")
     end
 end)
 

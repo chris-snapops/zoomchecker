@@ -2,7 +2,14 @@
 
 set -e
 
-echo "[ZoomChecker Installer] Starting setup v1..."
+echo "[ZoomChecker Installer] Starting setup v2..."
+
+# ---- Intro popup ----
+osascript <<EOF
+display dialog "ZoomChecker will install the necessary files to integrate with Hammerspoon.\n\nYou may be asked to:\n• Approve installation of Hammerspoon (if not already installed)\n• Allow ZoomChecker to access the Shortcuts app\n• Approve access to automation tools (macOS privacy permissions)\n\nClick OK to continue." with title "ZoomChecker Installer" buttons {"Cancel", "OK"} default button "OK"
+EOF
+
+echo "[ZoomChecker Installer] User confirmed. Starting setup..."
 
 # ---- 1. Install Hammerspoon if not present ----
 if ! [ -d "/Applications/Hammerspoon.app" ]; then
