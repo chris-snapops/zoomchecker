@@ -13,7 +13,7 @@ local function set_default_config()
         -- File doesn't exist — create it with default content
         local new_file = io.open(config_path, "w")
         if new_file then
-            local encoded = json.encode(default_config)
+            local encoded = json.encode(default_config, true)
             new_file:write(encoded)
             new_file:close()
             print("Created config.json with default settings.")
